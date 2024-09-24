@@ -1,12 +1,12 @@
-use crate::calc_errors::CalculationError;
 use std::fmt::{Display, Formatter};
 use std::ops::{Add, Div, Mul, Sub};
 
-pub mod calc_errors {
-    pub enum CalculationError {
-        IntegerOverflow(String),
-        DivisionByZero(String),
-    }
+#[derive(Debug, thiserror::Error)]
+pub enum CalculationError {
+    #[error("Error! Integer overflow. {0}")]
+    IntegerOverflow(String),
+    #[error("Error! Division by zero. {0}")]
+    DivisionByZero(String),
 }
 
 pub struct Calc {
@@ -79,14 +79,7 @@ impl Display for Calc {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match &self.reg {
             Ok(r) => write!(f, "Result: {r}"),
-            Err(e) => match e {
-                CalculationError::IntegerOverflow(msg) => {
-                    write!(f, "Error! Integer overflow. {msg}")
-                }
-                CalculationError::DivisionByZero(msg) => {
-                    write!(f, "Error! Division by zero. {msg}")
-                }
-            },
+            Err(e) => write!(f, "{}", e),
         }
     }
 }
